@@ -2,7 +2,11 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Modal from '../components/Modal';
-import { CheckIcon, UsersIcon, BriefcaseIcon, TrophyIcon, BuildingIcon, HandshakeIcon, ChartIcon, ClockIcon, TargetIcon, DocumentIcon } from '../components/Icons';
+import { CheckIcon, UsersIcon, BriefcaseIcon, TrophyIcon, HandshakeIcon, ChartIcon, ClockIcon, TargetIcon, DocumentIcon } from '../components/Icons';
+import { buildEmployerApplicationPayload } from '../constants/employerApplication';
+import { submitEmployerApplication } from '../services/applications';
+import { getApplicationSubmitErrorMessage } from '../utils/applicationErrors';
+import { formatPhone } from '../utils/formatPhone';
 
 const partnerBenefits = [
   { icon: <UsersIcon />, title: 'Квалифицированные кадры', text: 'Доступ к базе подготовленных специалистов' },
@@ -15,6 +19,8 @@ const partnerBenefits = [
 
 export default function EmployersPage() {
   const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     company: '',
     contact: '',
@@ -24,20 +30,21 @@ export default function EmployersPage() {
     requirements: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Заявка работодателя:', formData);
-    setShowModal(true);
-    setFormData({ company: '', contact: '', email: '', phone: '', vacancy: '', requirements: '' });
-  };
+    setIsSubmitting(true);
+    setSubmitError('');
 
-  const formatPhone = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 1) return numbers.length === 1 ? `+7 (${numbers}` : '';
-    if (numbers.length <= 4) return `+7 (${numbers.slice(1)}`;
-    if (numbers.length <= 7) return `+7 (${numbers.slice(1, 4)}) ${numbers.slice(4)}`;
-    if (numbers.length <= 9) return `+7 (${numbers.slice(1, 4)}) ${numbers.slice(4, 7)}-${numbers.slice(7)}`;
-    return `+7 (${numbers.slice(1, 4)}) ${numbers.slice(4, 7)}-${numbers.slice(7, 9)}-${numbers.slice(9, 11)}`;
+    try {
+      const payload = buildEmployerApplicationPayload(formData, { source: 'employers-page' });
+      await submitEmployerApplication(payload);
+      setShowModal(true);
+      setFormData({ company: '', contact: '', email: '', phone: '', vacancy: '', requirements: '' });
+    } catch (error) {
+      setSubmitError(getApplicationSubmitErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -92,46 +99,37 @@ export default function EmployersPage() {
         </div>
       </section>
 
-      {/* Как начать сотрудничество - timeline */}
-      <section className="how-it-works">
+      <section className="cooperation-steps-section">
         <div className="container">
           <div className="section-header-center">
             <span className="section-label">Процесс</span>
             <h2>Как начать сотрудничество</h2>
+            <p className="section-header-desc">
+              Четыре простых шага от заявки до выхода специалиста на ваше предприятие
+            </p>
           </div>
 
-          <div className="timeline">
-            <div className="timeline-item">
-              <div className="timeline-number">01</div>
-              <div className="timeline-content">
-                <h3>Оставьте заявку</h3>
-                <p>Заполните форму с информацией о компании и требованиях к кандидатам</p>
-              </div>
-            </div>
-            <div className="timeline-connector"></div>
-            <div className="timeline-item">
-              <div className="timeline-number">02</div>
-              <div className="timeline-content">
-                <h3>Обсуждение</h3>
-                <p>Наш специалист свяжется с вами для уточнения деталей</p>
-              </div>
-            </div>
-            <div className="timeline-connector"></div>
-            <div className="timeline-item">
-              <div className="timeline-number">03</div>
-              <div className="timeline-content">
-                <h3>Подбор кандидатов</h3>
-                <p>Подберём подходящих специалистов из нашей базы выпускников</p>
-              </div>
-            </div>
-            <div className="timeline-connector"></div>
-            <div className="timeline-item">
-              <div className="timeline-number">04</div>
-              <div className="timeline-content">
-                <h3>Трудоустройство</h3>
-                <p>Оформляем документы и сопровождаем на всех этапах</p>
-              </div>
-            </div>
+          <div className="cooperation-steps-grid">
+            <article className="cooperation-step-card">
+              <span className="cooperation-step-badge">01</span>
+              <h3>Оставьте заявку</h3>
+              <p>Заполните форму с информацией о компании и требованиях к кандидатам</p>
+            </article>
+            <article className="cooperation-step-card">
+              <span className="cooperation-step-badge">02</span>
+              <h3>Обсуждение</h3>
+              <p>Наш специалист свяжется с вами для уточнения деталей</p>
+            </article>
+            <article className="cooperation-step-card">
+              <span className="cooperation-step-badge">03</span>
+              <h3>Подбор кандидатов</h3>
+              <p>Подберём подходящих специалистов из нашей базы выпускников</p>
+            </article>
+            <article className="cooperation-step-card">
+              <span className="cooperation-step-badge">04</span>
+              <h3>Трудоустройство</h3>
+              <p>Оформляем документы и сопровождаем на всех этапах</p>
+            </article>
           </div>
         </div>
       </section>
@@ -225,7 +223,10 @@ export default function EmployersPage() {
                   rows="4"
                 ></textarea>
               </div>
-              <button type="submit" className="form-submit">Отправить заявку</button>
+              {submitError && <p className="form-error">{submitError}</p>}
+              <button type="submit" className="form-submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Отправка...' : 'Отправить заявку'}
+              </button>
             </form>
           </div>
         </div>

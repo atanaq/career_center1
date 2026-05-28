@@ -14,8 +14,8 @@ export default function Header({ onSearch }) {
 
   const navLinks = [
     { path: '/about', label: 'О нас' },
-    { path: '/professions', label: 'Профессии' },
-    { path: '/consultation', label: 'Консультация' },
+    { path: '/professions', label: 'Направления' },
+    { path: '/practice', label: 'Практика' },
     { path: '/employers', label: 'Работодателям' },
   ];
 
@@ -51,7 +51,13 @@ export default function Header({ onSearch }) {
                 onChange={handleSearch}
               />
             </div>
-            <Link to="/consultation" className="btn-primary">Оставить заявку</Link>
+            <Link
+              to="/practice#practice-form"
+              className="btn-primary btn-header-cta"
+              title="Оставить заявку на практику"
+            >
+              Заявка на практику
+            </Link>
           </div>
 
           <button
@@ -76,11 +82,11 @@ export default function Header({ onSearch }) {
               </Link>
             ))}
             <Link
-              to="/consultation"
+              to="/practice#practice-form"
               className="btn-primary mobile-cta"
               onClick={() => setIsMenuOpen(false)}
             >
-              Оставить заявку
+              Оставить заявку на практику
             </Link>
           </div>
         )}

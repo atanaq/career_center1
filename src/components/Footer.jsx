@@ -12,15 +12,15 @@ export default function Footer() {
               <span className="logo-text">МАДК им. Николаева</span>
             </Link>
             <p className="footer-description">
-              Центр содействия трудоустройству выпускников колледжа
+              Практика с трудоустройством для студентов и выпускников МАДК им. Николаева
             </p>
           </div>
 
           <div className="footer-nav">
             <h4>Навигация</h4>
             <Link to="/about">О нас</Link>
-            <Link to="/professions">Профессии</Link>
-            <Link to="/consultation">Консультация</Link>
+            <Link to="/professions">Направления</Link>
+            <Link to="/practice">Практика</Link>
             <Link to="/employers">Работодателям</Link>
           </div>
 

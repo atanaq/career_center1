@@ -2,6 +2,10 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Modal from '../components/Modal';
+import PracticeApplicationForm, { EMPTY_PRACTICE_APPLICATION } from '../components/PracticeApplicationForm';
+import { buildPracticeApplicationPayload } from '../constants/practiceApplication';
+import { submitPracticeApplication } from '../services/applications';
+import { getApplicationSubmitErrorMessage } from '../utils/applicationErrors';
 import { SearchIcon, CheckIcon, PhoneIcon, RocketIcon, UsersIcon, TrophyIcon, StarIcon, BriefcaseIcon, GearIcon, ShieldIcon, DocumentIcon } from '../components/Icons';
 
 const professions = [
@@ -12,10 +16,10 @@ const professions = [
 ];
 
 const benefits = [
-  { icon: <TrophyIcon />, title: '100% трудоустройство', text: 'Гарантируем работу каждому выпускнику', color: 'purple' },
-  { icon: <StarIcon />, title: 'Отличные отзывы', text: 'Более 500 положительных откликов', color: 'pink' },
-  { icon: <RocketIcon />, title: 'Карьерный рост', text: 'Долгосрочные перспективы развития', color: 'cyan' },
-  { icon: <BriefcaseIcon />, title: 'Достойная зарплата', text: 'Конкурентные условия оплаты', color: 'green' },
+  { icon: <TrophyIcon />, title: 'Практика с трудоустройством', text: 'Сопровождаем от практики до официального трудоустройства', color: 'purple' },
+  { icon: <BriefcaseIcon />, title: 'Предприятия-партнёры', text: 'Практика на реальных производствах и в сервисах', color: 'cyan' },
+  { icon: <StarIcon />, title: 'Куратор практики', text: 'Персональная поддержка на всех этапах', color: 'pink' },
+  { icon: <RocketIcon />, title: 'Карьерный рост', text: 'Помогаем закрепиться на рабочем месте после практики', color: 'green' },
 ];
 
 export default function HomePage() {
@@ -23,69 +27,99 @@ export default function HomePage() {
   const [showModal, setShowModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [selectedProfession, setSelectedProfession] = useState(null);
-  const [formData, setFormData] = useState({ name: '', phone: '' });
-  const [applicationFormData, setApplicationFormData] = useState({ name: '', phone: '', email: '' });
+  const [formData, setFormData] = useState({ ...EMPTY_PRACTICE_APPLICATION });
+  const [applicationFormData, setApplicationFormData] = useState({ ...EMPTY_PRACTICE_APPLICATION });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isModalSubmitting, setIsModalSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [modalSubmitError, setModalSubmitError] = useState('');
 
-  const filteredProfessions = professions.filter(p =>
+  const filteredProfessions = professions.filter((p) =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Заявка отправлена:', formData);
-    setShowModal(true);
-    setFormData({ name: '', phone: '' });
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const payload = buildPracticeApplicationPayload(formData, { source: 'home-main-form' });
+      await submitPracticeApplication(payload);
+      setShowModal(true);
+      setFormData({ ...EMPTY_PRACTICE_APPLICATION });
+    } catch (error) {
+      setSubmitError(getApplicationSubmitErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleProfessionApply = (profession) => {
     setSelectedProfession(profession);
+    setModalSubmitError('');
+    setApplicationFormData({
+      ...EMPTY_PRACTICE_APPLICATION,
+      studySpecialty: profession.title,
+    });
     setShowApplicationModal(true);
   };
 
-  const handleApplicationSubmit = (e) => {
+  const handleApplicationSubmit = async (e) => {
     e.preventDefault();
-    console.log('Заявка на профессию:', selectedProfession?.title, applicationFormData);
-    setShowApplicationModal(false);
-    setShowModal(true);
-    setApplicationFormData({ name: '', phone: '', email: '' });
-  };
+    setIsModalSubmitting(true);
+    setModalSubmitError('');
 
-  const formatPhone = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 1) return numbers.length === 1 ? `+7 (${numbers}` : '';
-    if (numbers.length <= 4) return `+7 (${numbers.slice(1)}`;
-    if (numbers.length <= 7) return `+7 (${numbers.slice(1, 4)}) ${numbers.slice(4)}`;
-    if (numbers.length <= 9) return `+7 (${numbers.slice(1, 4)}) ${numbers.slice(4, 7)}-${numbers.slice(7)}`;
-    return `+7 (${numbers.slice(1, 4)}) ${numbers.slice(4, 7)}-${numbers.slice(7, 9)}-${numbers.slice(9, 11)}`;
+    try {
+      const payload = buildPracticeApplicationPayload(applicationFormData, {
+        source: 'home-profession-modal',
+        profession: selectedProfession?.title,
+        professionId: selectedProfession?.id,
+      });
+      await submitPracticeApplication(payload);
+      setShowApplicationModal(false);
+      setShowModal(true);
+      setApplicationFormData({ ...EMPTY_PRACTICE_APPLICATION });
+    } catch (error) {
+      setModalSubmitError(getApplicationSubmitErrorMessage(error));
+    } finally {
+      setIsModalSubmitting(false);
+    }
   };
 
   return (
     <>
       <Header onSearch={setSearchQuery} />
 
-      {/* HERO */}
       <section className="hero">
         <div className="container">
           <div className="hero-layout">
             <div className="hero-main">
               <div className="hero-badge">
                 <span className="hero-badge-dot"></span>
-                Онлайн-консультация доступна
+                Запись на производственную практику открыта
               </div>
-              
+
               <h1 className="hero-title">
-                <span className="hero-title-gradient">Центр содействия</span>
-                <br />трудоустройству
+                <span className="hero-title-gradient">Практика</span>
+                <br />
+                с трудоустройством
               </h1>
-              
+
               <p className="hero-description">
-                Заменили ручной учёт на умную автоматизацию. 
-                Полная прозрачность трудоустройства для студентов и партнёров.
+                Центр содействия трудоустройству МАДК им. Николаева: прохождение практики
+                на предприятиях-партнёрах, сопровождение и помощь в трудоустройстве после
+                обучения.
               </p>
 
               <div className="hero-cta-row">
-                <button className="btn-primary btn-large" onClick={() => document.getElementById('application').scrollIntoView({ behavior: 'smooth' })}>
-                  Оставить заявку
+                <button
+                  className="btn-primary btn-large"
+                  onClick={() =>
+                    document.getElementById('application').scrollIntoView({ behavior: 'smooth' })
+                  }
+                >
+                  Оставить заявку на практику
                 </button>
                 <div className="hero-phone-inline">
                   <PhoneIcon />
@@ -96,21 +130,27 @@ export default function HomePage() {
 
             <div className="hero-sidebar">
               <div className="stat-mini-card">
-                <div className="stat-mini-icon purple"><UsersIcon /></div>
+                <div className="stat-mini-icon purple">
+                  <UsersIcon />
+                </div>
                 <div className="stat-mini-content">
                   <strong>1200+</strong>
-                  <span>Выпускников</span>
+                  <span>Прошли практику</span>
                 </div>
               </div>
               <div className="stat-mini-card">
-                <div className="stat-mini-icon cyan"><BriefcaseIcon /></div>
+                <div className="stat-mini-icon cyan">
+                  <BriefcaseIcon />
+                </div>
                 <div className="stat-mini-content">
                   <strong>50+</strong>
-                  <span>Партнёров</span>
+                  <span>Баз практики</span>
                 </div>
               </div>
               <div className="stat-mini-card">
-                <div className="stat-mini-icon green"><TrophyIcon /></div>
+                <div className="stat-mini-icon green">
+                  <TrophyIcon />
+                </div>
                 <div className="stat-mini-content">
                   <strong>98%</strong>
                   <span>Трудоустроено</span>
@@ -121,15 +161,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ПРЕИМУЩЕСТВА */}
       <section className="benefits-strip" id="benefits">
         <div className="container">
           <div className="benefits-strip-inner">
             {benefits.map((benefit, index) => (
               <div key={index} className="benefit-strip-item">
-                <div className={`benefit-strip-icon ${benefit.color}`}>
-                  {benefit.icon}
-                </div>
+                <div className={`benefit-strip-icon ${benefit.color}`}>{benefit.icon}</div>
                 <div className="benefit-strip-text">
                   <strong>{benefit.title}</strong>
                   <span>{benefit.text}</span>
@@ -140,19 +177,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ПРОФЕССИИ */}
       <section className="professions-section" id="professions">
         <div className="container">
           <div className="professions-header">
             <div className="professions-title-block">
-              <span className="section-label">Вакансии</span>
-              <h2>Подай заявку на работу по профессии</h2>
+              <span className="section-label">Направления</span>
+              <h2>Выберите направление практики</h2>
             </div>
             <div className="professions-search-inline">
               <SearchIcon />
               <input
                 type="text"
-                placeholder="Найти профессию..."
+                placeholder="Найти направление..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -168,11 +204,11 @@ export default function HomePage() {
                     <h3>{profession.title}</h3>
                     <span className="profession-card-salary">{profession.salary}</span>
                   </div>
-                  <button 
+                  <button
                     className="profession-card-btn"
                     onClick={() => handleProfessionApply(profession)}
                   >
-                    Подать заявку
+                    Оставить заявку на практику
                   </button>
                 </div>
               ))}
@@ -180,13 +216,12 @@ export default function HomePage() {
           ) : (
             <div className="no-results">
               <SearchIcon />
-              <p>Профессия не найдена</p>
+              <p>Направление не найдено</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* АВТОМАТИЗАЦИЯ */}
       <section className="automation-section">
         <div className="container">
           <div className="automation-card">
@@ -194,17 +229,20 @@ export default function HomePage() {
               <GearIcon />
             </div>
             <div className="automation-content">
-              <h3>Умная система обработки заявок</h3>
-              <p>Данные сохраняются в базе, документы формируются автоматически. Никаких таблиц Excel — только современные технологии.</p>
+              <h3>Учёт практикантов в админ-панели</h3>
+              <p>
+                Заявки с сайта автоматически попадают в десктопную админку: ФИО, группа,
+                направление, формат и сроки практики — всё в одном месте для координаторов.
+              </p>
             </div>
             <div className="automation-features">
               <div className="automation-feature">
                 <CheckIcon />
-                <span>Мгновенная обработка</span>
+                <span>Распределение по базам</span>
               </div>
               <div className="automation-feature">
                 <DocumentIcon />
-                <span>Автогенерация документов</span>
+                <span>Документы по практике</span>
               </div>
               <div className="automation-feature">
                 <ShieldIcon />
@@ -215,79 +253,63 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ФОРМА ЗАЯВКИ */}
       <section className="application-section" id="application">
         <div className="container">
-          <div className="application-wrapper">
+          <div className="application-wrapper application-wrapper--wide">
             <div className="application-info">
-              <span className="section-label">Консультация</span>
-              <h2>Оставь заявку на онлайн-консультацию</h2>
-              <p>Заполни форму и наш специалист свяжется с тобой в течение рабочего дня</p>
-              
+              <span className="section-label">Практика</span>
+              <h2>Записаться на практику</h2>
+              <p>
+                Заполните подробную анкету — данные сразу будут доступны администратору в
+                десктопной панели
+              </p>
+
               <div className="application-benefits">
                 <div className="application-benefit">
                   <CheckIcon />
-                  <span>Бесплатная консультация</span>
+                  <span>Практика с трудоустройством</span>
                 </div>
                 <div className="application-benefit">
                   <CheckIcon />
-                  <span>Помощь в выборе профессии</span>
+                  <span>Подбор предприятия под профиль</span>
                 </div>
                 <div className="application-benefit">
                   <CheckIcon />
-                  <span>Связь с работодателями</span>
+                  <span>Сопровождение куратора</span>
                 </div>
               </div>
             </div>
 
-            <form className="application-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Ваше имя</label>
-                <input
-                  type="text"
-                  placeholder="Введите имя"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Номер телефона</label>
-                <input
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
-                  required
-                />
-              </div>
-              <button type="submit" className="form-submit">Отправить заявку</button>
-              <p className="form-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
-            </form>
+            <div className="application-form-panel">
+              <PracticeApplicationForm
+                formData={formData}
+                onChange={setFormData}
+                onSubmit={handleSubmit}
+                submitLabel="Записаться на практику"
+                compact
+                isSubmitting={isSubmitting}
+                submitError={submitError}
+              />
+            </div>
           </div>
         </div>
       </section>
 
       <Footer />
 
-      {/* Модальное окно успеха */}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <div className="success-modal">
-            <div className="success-icon">
-              <CheckIcon />
-            </div>
-            <h3>Заявка отправлена!</h3>
-            <p>Мы сформируем документы и свяжемся с вами в ближайшее время</p>
+            <h3>Заявка на практику отправлена!</h3>
+            <p>Администратор получил ваши данные и свяжется с вами для согласования практики</p>
           </div>
         </Modal>
       )}
 
-      {/* Модальное окно заявки на профессию */}
       {showApplicationModal && (
-        <Modal onClose={() => setShowApplicationModal(false)}>
+        <Modal onClose={() => setShowApplicationModal(false)} variant="form">
           <div className="application-modal">
-            <h3>Заявка на профессию</h3>
+            <h3>Заявка на практику</h3>
             <div className="selected-profession">
               <span className="profession-emoji-modal">{selectedProfession?.emoji}</span>
               <div>
@@ -295,39 +317,17 @@ export default function HomePage() {
                 <span>{selectedProfession?.salary}</span>
               </div>
             </div>
-            <form onSubmit={handleApplicationSubmit}>
-              <div className="form-group">
-                <label>Ваше имя</label>
-                <input
-                  type="text"
-                  placeholder="Введите имя"
-                  value={applicationFormData.name}
-                  onChange={(e) => setApplicationFormData({ ...applicationFormData, name: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  placeholder="example@mail.ru"
-                  value={applicationFormData.email}
-                  onChange={(e) => setApplicationFormData({ ...applicationFormData, email: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Телефон</label>
-                <input
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
-                  value={applicationFormData.phone}
-                  onChange={(e) => setApplicationFormData({ ...applicationFormData, phone: formatPhone(e.target.value) })}
-                  required
-                />
-              </div>
-              <button type="submit" className="form-submit">Отправить заявку</button>
-            </form>
+            <PracticeApplicationForm
+              formData={applicationFormData}
+              onChange={setApplicationFormData}
+              onSubmit={handleApplicationSubmit}
+              submitLabel="Оставить заявку на практику"
+              showProfessionField
+              professionTitle={selectedProfession?.title}
+              compact
+              isSubmitting={isModalSubmitting}
+              submitError={modalSubmitError}
+            />
           </div>
         </Modal>
       )}
