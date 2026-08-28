@@ -1,42 +1,35 @@
-/* ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
 :root {
-  /* Тёмная футуристичная палитра */
+
   --bg-dark: #0a0a0f;
   --bg-card: #12121a;
   --bg-card-hover: #1a1a25;
   --bg-gradient-start: #0a0a0f;
   --bg-gradient-end: #1a1028;
-  
-  /* Неоновые акценты */
+
   --neon-purple: #a855f7;
   --neon-pink: #ec4899;
   --neon-cyan: #06b6d4;
   --neon-green: #10b981;
-  
-  /* Текст */
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  
-  /* Границы и эффекты */
+
   --border-color: #2a2a3a;
   --glow-purple: 0 0 20px rgba(168, 85, 247, 0.4);
   --glow-pink: 0 0 20px rgba(236, 72, 153, 0.4);
   --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.4);
-  
-  /* Размеры */
+
   --container-width: 1200px;
   --header-height: 80px;
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-full: 9999px;
-  
-  /* Шрифт */
+
   --font-main: 'Space Grotesk', 'Segoe UI', sans-serif;
 }
 
-/* ===== БАЗОВЫЕ СТИЛИ ===== */
 * {
   margin: 0;
   padding: 0;
@@ -82,14 +75,12 @@ img {
   display: block;
 }
 
-/* ===== КОНТЕЙНЕР ===== */
 .container {
   max-width: var(--container-width);
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ===== УТИЛИТЫ ===== */
 .text-gradient {
   background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
   background-size: 200% 200%;
@@ -109,7 +100,6 @@ img {
   font-weight: 600;
 }
 
-/* ===== АНИМАЦИИ ===== */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -153,7 +143,6 @@ img {
   }
 }
 
-/* ===== ХЕДЕР ===== */
 .header {
   position: fixed;
   top: 0;
@@ -385,7 +374,6 @@ img {
   border-bottom: 1px solid var(--border-color);
 }
 
-/* ===== HERO SECTION - НОВАЯ СТРУКТУРА ===== */
 .hero {
   min-height: 100vh;
   padding-top: calc(var(--header-height) + 80px);
@@ -541,7 +529,6 @@ img {
   color: var(--text-muted);
 }
 
-/* ===== BENEFITS STRIP - Горизонтальная полоса ===== */
 .benefits-strip {
   padding: 60px 0;
   background: var(--bg-card);
@@ -613,7 +600,6 @@ img {
   color: var(--text-muted);
 }
 
-/* ===== PROFESSIONS SECTION - НОВАЯ СТРУКТУРА ===== */
 .professions-section {
   padding: 100px 0;
   background: var(--bg-dark);
@@ -766,7 +752,6 @@ img {
   opacity: 0.5;
 }
 
-/* ===== AUTOMATION SECTION ===== */
 .automation-section {
   padding: 80px 0;
   background: var(--bg-card);
@@ -843,7 +828,6 @@ img {
   color: var(--text-secondary);
 }
 
-/* ===== APPLICATION SECTION ===== */
 .application-section {
   padding: 100px 0;
   background: 
@@ -1006,7 +990,6 @@ img {
   gap: 20px;
 }
 
-/* ===== FOOTER ===== */
 .footer {
   background: var(--bg-card);
   border-top: 1px solid var(--border-color);
@@ -1097,7 +1080,6 @@ img {
   color: var(--neon-purple);
 }
 
-/* ===== MODAL ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1208,7 +1190,6 @@ img {
   padding-right: 40px;
 }
 
-/* ===== PRACTICE APPLICATION FORM ===== */
 .practice-application-form {
   display: flex;
   flex-direction: column;
@@ -1268,7 +1249,6 @@ img {
   padding: 0;
 }
 
-/* ===== EMPLOYERS PAGE ===== */
 .employers-hero-section {
   min-height: 50vh;
   padding-top: calc(var(--header-height) + 80px);
@@ -1336,7 +1316,6 @@ img {
   background: var(--border-color);
 }
 
-/* ===== PARTNER BENEFITS ===== */
 .partner-benefits {
   padding: 100px 0;
   background: var(--bg-card);
@@ -1409,7 +1388,6 @@ img {
   line-height: 1.6;
 }
 
-/* ===== EMPLOYERS: COOPERATION STEPS ===== */
 .cooperation-steps-section {
   padding: 100px 0;
   background: var(--bg-dark);
@@ -1473,7 +1451,6 @@ img {
   margin: 0;
 }
 
-/* ===== EMPLOYER FORM SECTION ===== */
 .employer-form-section {
   padding: 100px 0;
   background: var(--bg-card);
@@ -1530,9 +1507,6 @@ img {
   padding: 40px;
 }
 
-/* ===== NEW PAGES STYLES ===== */
-
-/* Page Hero */
 .page-hero {
   padding-top: calc(var(--header-height) + 80px);
   padding-bottom: 60px;
@@ -1567,7 +1541,6 @@ img {
   line-height: 1.7;
 }
 
-/* Values Section (About Page) */
 .values-section {
   padding: 100px 0;
   background: var(--bg-card);
@@ -1635,7 +1608,6 @@ img {
   line-height: 1.7;
 }
 
-/* History Section */
 .history-section {
   padding: 100px 0;
   background: var(--bg-dark);
@@ -1700,7 +1672,6 @@ img {
   line-height: 1.6;
 }
 
-/* Team Section */
 .team-section {
   padding: 100px 0;
   background: var(--bg-card);
@@ -1750,7 +1721,6 @@ img {
   font-size: 14px;
 }
 
-/* Achievements Section */
 .achievements-section {
   padding: 80px 0;
   background: var(--bg-dark);
@@ -1785,7 +1755,6 @@ img {
   font-size: 14px;
 }
 
-/* Professions Page Filters */
 .professions-filters {
   padding: 40px 0;
   background: var(--bg-card);
@@ -1829,7 +1798,6 @@ img {
   color: white;
 }
 
-/* Professions List Page */
 .professions-list {
   padding: 80px 0;
   background: var(--bg-dark);
@@ -1923,7 +1891,6 @@ img {
   box-shadow: var(--glow-purple);
 }
 
-/* Application Modal */
 .application-modal {
   text-align: left;
 }
@@ -1963,7 +1930,6 @@ img {
   font-size: 14px;
 }
 
-/* Success Modal */
 .success-modal {
   text-align: center;
 }
@@ -1994,7 +1960,6 @@ img {
   margin-bottom: 8px;
 }
 
-/* Consultation Page */
 .consultation-types {
   padding: 100px 0;
   background: var(--bg-card);
@@ -2073,7 +2038,6 @@ img {
   font-size: 13px;
 }
 
-/* Consultation Steps */
 .consultation-steps {
   padding: 100px 0;
   background: var(--bg-dark);
@@ -2132,7 +2096,6 @@ img {
   display: none;
 }
 
-/* Consultation Form Section */
 .consultation-form-section {
   padding: 100px 0;
   background: var(--bg-card);
@@ -2211,7 +2174,6 @@ img {
   box-shadow: var(--glow-purple);
 }
 
-/* Header Updates */
 .header-actions {
   display: flex;
   align-items: center;
@@ -2268,7 +2230,6 @@ img {
   height: 18px;
 }
 
-/* Mobile Menu */
 .mobile-menu {
   display: none;
   position: absolute;
@@ -2321,7 +2282,6 @@ img {
   color: var(--text-primary);
 }
 
-/* Footer Updates */
 .footer-content {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -2388,7 +2348,6 @@ img {
   font-size: 14px;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .hero-layout {
     flex-direction: column;

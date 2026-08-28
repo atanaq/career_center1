@@ -40,8 +40,6 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-
-      {/* Hero секция */}
       <section className="page-hero">
         <div className="container">
           <span className="section-label">О нас</span>
@@ -55,7 +53,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Миссия и ценности */}
       <section className="values-section">
         <div className="container">
           <div className="section-header-center">
@@ -75,7 +72,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* История */}
       <section className="history-section">
         <div className="container">
           <div className="section-header-center">
@@ -99,7 +95,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Команда */}
       <section className="team-section">
         <div className="container">
           <div className="section-header-center">
@@ -119,7 +114,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Достижения */}
       <section className="achievements-section">
         <div className="container">
           <div className="achievements-grid">

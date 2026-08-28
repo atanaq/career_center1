@@ -1,25 +1,13 @@
-# Dependencies
 node_modules/
-
-# Build output (gh-pages публикует dist отдельно, в main не храним)
 dist/
-
-# Vite
 .vite/
-
-# gh-pages cache (ломает deploy, если попадает в git)
 node_modules/.cache/
-
-# Logs & OS
 *.log
 .DS_Store
 Thumbs.db
-
-# Env
 .env
 .env.*
-
-# Editor
 .idea/
 .vscode/
 *.swp
+firebase.js
